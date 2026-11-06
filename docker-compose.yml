@@ -1,0 +1,46 @@
+services:
+  backend:
+    build:
+      context: ./CandidAct-hackathon-backend
+    ports:
+      - "8000:80"
+    env_file:
+      - ./CandidAct-hackathon-backend/.env
+      - ./CandidAct-hackathon-backend/.env.local
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./CandidAct-hackathon-frontend
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./CandidAct-hackathon-frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+  db:
+    image: mariadb:11
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: candidact
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: root
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+volumes:
+  db_data:
